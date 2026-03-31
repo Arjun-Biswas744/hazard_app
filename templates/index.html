@@ -40,7 +40,12 @@ function run() {
         // =========================
         // Hazard Curves (Plot 1)
         // =========================
-        for (let key in data.hazard_curves) {
+        let keys = Object.keys(data.hazard_curves);
+
+        // sort numerically
+        keys.sort((a, b) => parseFloat(a) - parseFloat(b));
+
+        for (let key of keys) {
             let c = data.hazard_curves[key];
 
             traces.push({
@@ -59,7 +64,11 @@ function run() {
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
-                range: [-2, Math.log10(5)],  // example upper bound
+                range: [-2, 2],  // example upper bound
+				
+				dtick: 1,                 // ✅ ONLY 10^n ticks
+				tickformat: ".0e",        // cleaner scientific format
+				
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -68,12 +77,13 @@ function run() {
                 linecolor: "black",
                 linewidth: 1,
                 mirror: true,
-                tickformat: "e"
+				
+              
             },
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
-                range: [-17, Math.log10(5)],  // example upper bound
+                range: [-18, Math.log10(5)],  // example upper bound
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -82,11 +92,19 @@ function run() {
                 linecolor: "black",
                 linewidth: 1,
                 mirror: true,
-                tickformat: "e" 
+                
             },
             legend: {
-                font: {size: 10},
-                bgcolor: "rgba(255,255,255,0.7)"
+                x: 0.98,          // right side
+                y: 0.98,          // top inside
+                xanchor: "right",
+                yanchor: "top",
+
+                bgcolor: "rgba(255,255,255,0.7)",
+                bordercolor: "black",
+                borderwidth: 1,
+
+                font: {size: 8}
             },
             margin: {t: 50, l: 60, r: 20, b: 60}
         });
@@ -112,7 +130,11 @@ function run() {
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
-                range: [-2, Math.log10(5)],  // example upper bound
+                range: [-2, 2],  // example upper bound
+				
+				dtick: 1,                 // ✅ ONLY 10^n ticks
+				tickformat: ".0e",        // cleaner scientific format
+				
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -121,12 +143,13 @@ function run() {
                 linecolor: "black",
                 linewidth: 1,
                 mirror: true,
-                tickformat: "e"
+
+              
             },
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
-                range: [-17, Math.log10(5)],  // example upper bound
+                range: [-18, Math.log10(5)],  // example upper bound
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -138,8 +161,16 @@ function run() {
                 tickformat: "e"
             },
             legend: {
-                font: {size: 10},
-                bgcolor: "rgba(255,255,255,0.7)"
+                x: 0.98,          // right side
+                y: 0.98,          // top inside
+                xanchor: "right",
+                yanchor: "top",
+
+                bgcolor: "rgba(255,255,255,0.7)",
+                bordercolor: "black",
+                borderwidth: 1,
+
+                font: {size: 8}
             },
             margin: {t: 50, l: 60, r: 20, b: 60}
         });

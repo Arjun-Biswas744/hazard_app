@@ -21,6 +21,7 @@
 <div id="plot3"></div>
 
 <script>
+<script>
 function run() {
 
     let rp = document.getElementById("rp").value;
@@ -37,6 +38,9 @@ function run() {
 
         let traces = [];
 
+        // =========================
+        // Hazard Curves (Plot 1)
+        // =========================
         for (let key in data.hazard_curves) {
             let c = data.hazard_curves[key];
 
@@ -44,33 +48,85 @@ function run() {
                 x: c.intensity,
                 y: c.lambda,
                 mode: "lines+markers",
-                name: "T=" + key
+                name: "T = " + key + " s"
             });
         }
 
         Plotly.newPlot("plot1", traces, {
-            xaxis: {type: "log"},
-            yaxis: {type: "log"}
+            title: "Hazard Curves (Annual Frequency)",
+            xaxis: {
+                title: "Spectral Acceleration (g)",
+                type: "log",
+                showgrid: true,
+                gridcolor: "lightgray"
+            },
+            yaxis: {
+                title: "Annual Frequency of Exceedance (λ)",
+                type: "log",
+                showgrid: true,
+                gridcolor: "lightgray"
+            },
+            legend: {
+                font: {size: 10}
+            }
         });
 
+        // =========================
+        // Hazard + Return Period (Plot 2)
+        // =========================
         let traces2 = [...traces];
+
         traces2.push({
             x: [0.001, 5],
             y: [lambda, lambda],
             mode: "lines",
-            line: {dash: "dash", color: "red"}
+            name: "Return Period Line",
+            line: {dash: "dash"}
         });
 
         Plotly.newPlot("plot2", traces2, {
-            xaxis: {type: "log"},
-            yaxis: {type: "log"}
+            title: "Hazard Curves with Return Period Line",
+            xaxis: {
+                title: "Spectral Acceleration (g)",
+                type: "log",
+                showgrid: true,
+                gridcolor: "lightgray"
+            },
+            yaxis: {
+                title: "Annual Frequency of Exceedance (λ)",
+                type: "log",
+                showgrid: true,
+                gridcolor: "lightgray"
+            },
+            legend: {
+                font: {size: 10}
+            }
         });
 
+        // =========================
+        // UHS Plot (Plot 3)
+        // =========================
         Plotly.newPlot("plot3", [{
             x: data.uhs_periods,
             y: data.uhs_values,
-            mode: "lines+markers"
-        }]);
+            mode: "lines+markers",
+            name: "UHS"
+        }], {
+            title: "Uniform Hazard Spectrum (" + rp + " yrs)",
+            xaxis: {
+                title: "Period (s)",
+                showgrid: true,
+                gridcolor: "lightgray"
+            },
+            yaxis: {
+                title: "Spectral Acceleration (g)",
+                showgrid: true,
+                gridcolor: "lightgray"
+            },
+            legend: {
+                font: {size: 10}
+            }
+        });
 
     });
 }

@@ -59,18 +59,30 @@ function run() {
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
+                range: [-2, Math.log10(5)]  // example upper bound
                 showgrid: true,
-                gridcolor: "black",
-                gridwidth: 0.5,
+                gridcolor: "grey",
+                gridwidth: 0.2,
                 griddash: "dashdot"
+                showline: true,
+                linecolor: "black",
+                linewidth: 1,
+                mirror: true
+                tickformat: "e"
             },
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
+                range: [-17, Math.log10(5)]  // example upper bound
                 showgrid: true,
-                gridcolor: "black",
-                gridwidth: 0.5,
+                gridcolor: "grey",
+                gridwidth: 0.2,
                 griddash: "dashdot"
+                showline: true,
+                linecolor: "black",
+                linewidth: 1,
+                mirror: true
+                tickformat: "e" 
             },
             legend: {
                 font: {size: 10},
@@ -100,18 +112,30 @@ function run() {
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
+                range: [-2, Math.log10(5)]  // example upper bound
                 showgrid: true,
-                gridcolor: "black",
-                gridwidth: 0.5,
+                gridcolor: "grey",
+                gridwidth: 0.2,
                 griddash: "dashdot"
+                showline: true,
+                linecolor: "black",
+                linewidth: 1,
+                mirror: true
+                tickformat: "e"
             },
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
+                range: [-17, Math.log10(5)]  // example upper bound
                 showgrid: true,
-                gridcolor: "black",
-                gridwidth: 0.5,
+                gridcolor: "grey",
+                gridwidth: 0.2,
                 griddash: "dashdot"
+                showline: true,
+                linecolor: "black",
+                linewidth: 1,
+                mirror: true
+                tickformat: "e"
             },
             legend: {
                 font: {size: 10},
@@ -136,16 +160,24 @@ function run() {
             xaxis: {
                 title: "Period (s)",
                 showgrid: true,
-                gridcolor: "black",
-                gridwidth: 0.5,
+                gridcolor: "grey",
+                gridwidth: 0.2,
                 griddash: "dashdot"
+                showline: true,
+                linecolor: "black",
+                linewidth: 1,
+                mirror: true
             },
             yaxis: {
                 title: "Spectral Acceleration (g)",
                 showgrid: true,
-                gridcolor: "black",
-                gridwidth: 0.5,
+                gridcolor: "grey",
+                gridwidth: 0.2,
                 griddash: "dashdot"
+                showline: true,
+                linecolor: "black",
+                linewidth: 1,
+                mirror: true
             },
             legend: {
                 font: {size: 10},

@@ -21,7 +21,6 @@
 <div id="plot3"></div>
 
 <script>
-<script>
 function run() {
 
     let rp = document.getElementById("rp").value;
@@ -53,22 +52,31 @@ function run() {
         }
 
         Plotly.newPlot("plot1", traces, {
-            title: "Hazard Curves (Annual Frequency)",
+            title: {
+                text: "Hazard Curves (Annual Frequency)",
+                font: {size: 16}
+            },
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
                 showgrid: true,
-                gridcolor: "lightgray"
+                gridcolor: "black",
+                gridwidth: 0.5,
+                griddash: "dashdot"
             },
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
                 showgrid: true,
-                gridcolor: "lightgray"
+                gridcolor: "black",
+                gridwidth: 0.5,
+                griddash: "dashdot"
             },
             legend: {
-                font: {size: 10}
-            }
+                font: {size: 10},
+                bgcolor: "rgba(255,255,255,0.7)"
+            },
+            margin: {t: 50, l: 60, r: 20, b: 60}
         });
 
         // =========================
@@ -85,22 +93,31 @@ function run() {
         });
 
         Plotly.newPlot("plot2", traces2, {
-            title: "Hazard Curves with Return Period Line",
+            title: {
+                text: "Hazard Curves with Return Period",
+                font: {size: 16}
+            },
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
                 showgrid: true,
-                gridcolor: "lightgray"
+                gridcolor: "black",
+                gridwidth: 0.5,
+                griddash: "dashdot"
             },
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
                 showgrid: true,
-                gridcolor: "lightgray"
+                gridcolor: "black",
+                gridwidth: 0.5,
+                griddash: "dashdot"
             },
             legend: {
-                font: {size: 10}
-            }
+                font: {size: 10},
+                bgcolor: "rgba(255,255,255,0.7)"
+            },
+            margin: {t: 50, l: 60, r: 20, b: 60}
         });
 
         // =========================
@@ -110,22 +127,31 @@ function run() {
             x: data.uhs_periods,
             y: data.uhs_values,
             mode: "lines+markers",
-            name: "UHS"
+            name: "Uniform Hazard Curve"
         }], {
-            title: "Uniform Hazard Spectrum (" + rp + " yrs)",
+            title: {
+                text: "Uniform Hazard Spectrum (" + rp + " yrs)",
+                font: {size: 16}
+            },
             xaxis: {
                 title: "Period (s)",
                 showgrid: true,
-                gridcolor: "lightgray"
+                gridcolor: "black",
+                gridwidth: 0.5,
+                griddash: "dashdot"
             },
             yaxis: {
                 title: "Spectral Acceleration (g)",
                 showgrid: true,
-                gridcolor: "lightgray"
+                gridcolor: "black",
+                gridwidth: 0.5,
+                griddash: "dashdot"
             },
             legend: {
-                font: {size: 10}
-            }
+                font: {size: 10},
+                bgcolor: "rgba(255,255,255,0.7)"
+            },
+            margin: {t: 50, l: 60, r: 20, b: 60}
         });
 
     });

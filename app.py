@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import os
 import re
 import numpy as np
-# import pandas as pd
+import pandas as pd
 import time
 
 # 🔴 IMPORT YOUR FUNCTION FILE NAME HERE
@@ -274,6 +274,7 @@ def get_periods(location, return_period):
 # -----------------------------------
 
 # Routes
+# -----------------------------------
 @app.route("/", methods=["GET", "POST"])
 def index():
     locations = get_locations()
@@ -313,13 +314,9 @@ def index():
             base_path = os.path.join(app.root_path, "Hazard curve", selected_location, str(return_period))
             shp_files = glob.glob(os.path.join(base_path, "*.shp"))
 
-            # highlight_shape = None
-            # try:
-            #    if shp_files:
-            #         # highlight_shape = gpd.read_file(shp_files[0])
-            # except Exception as e:
-            #     print("SHAPEFILE ERROR:", e)
-            #     highlight_shape = None
+            highlight_shape = None
+            if shp_files:
+                highlight_shape = gpd.read_file(shp_files[0])
 
             # ✅ Titles FIRST
             percent_dict = {"475": "10%", "975": "5%", "2475": "2%"}
@@ -377,8 +374,6 @@ def index():
         map_title_orig=map_title_orig
     )
 
-
-
 ###### Routes for urve ################
 
 from flask import jsonify   # add this import
@@ -407,6 +402,9 @@ def compute_cms_api():
 @app.route("/get_periods/<location>/<return_period>")
 def periods_api(location, return_period):
     return {"periods": get_periods(location, return_period)}
+
+if __name__ == "__main__":
+    app.run(debug=True)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=10000)

@@ -2,9 +2,14 @@ services:
   - type: web
     name: my-app
     env: python
-    pythonVersion: 3.11.9
+
     buildCommand: |
       apt-get update && apt-get install -y gdal-bin libgdal-dev
       pip install --upgrade pip
       pip install -r requirements.txt
+
     startCommand: gunicorn app:app
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9

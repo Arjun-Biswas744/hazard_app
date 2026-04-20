@@ -313,13 +313,13 @@ def index():
             base_path = os.path.join(app.root_path, "Hazard curve", selected_location, str(return_period))
             shp_files = glob.glob(os.path.join(base_path, "*.shp"))
 
-            highlight_shape = None
-            try:
-               if shp_files:
-                    # highlight_shape = gpd.read_file(shp_files[0])
-            except Exception as e:
-                print("SHAPEFILE ERROR:", e)
-                highlight_shape = None
+            # highlight_shape = None
+            # try:
+            #    if shp_files:
+            #         # highlight_shape = gpd.read_file(shp_files[0])
+            # except Exception as e:
+            #     print("SHAPEFILE ERROR:", e)
+            #     highlight_shape = None
 
             # ✅ Titles FIRST
             percent_dict = {"475": "10%", "975": "5%", "2475": "2%"}

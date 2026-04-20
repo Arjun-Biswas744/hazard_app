@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import os
 import re
 import numpy as np
-import pandas as pd
+# import pandas as pd
 import time
 
 # 🔴 IMPORT YOUR FUNCTION FILE NAME HERE
@@ -314,8 +314,12 @@ def index():
             shp_files = glob.glob(os.path.join(base_path, "*.shp"))
 
             highlight_shape = None
-            if shp_files:
-                highlight_shape = gpd.read_file(shp_files[0])
+            try:
+               if shp_files:
+                    # highlight_shape = gpd.read_file(shp_files[0])
+            except Exception as e:
+                print("SHAPEFILE ERROR:", e)
+                highlight_shape = None
 
             # ✅ Titles FIRST
             percent_dict = {"475": "10%", "975": "5%", "2475": "2%"}

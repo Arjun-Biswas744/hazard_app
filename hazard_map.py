@@ -49,7 +49,7 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     # ---------------------------
     # Shapefile (CACHED)
     # ---------------------------
-    shp_files = glob.glob(os.path.join(location_folder, "*.shp"))
+    shp_files = glob.glob(os.path.join(base_path, "*.shp"))
 
     if not shp_files:
         raise FileNotFoundError(f"No shapefile found in {location_folder}")

@@ -46,6 +46,9 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     # ---------------------------
     # Shapefile (CACHED)
     # ---------------------------
+    # ---------------------------
+    # Shapefile (CACHED)
+    # ---------------------------
     shp_files = glob.glob(os.path.join(location_folder, "*.shp"))
 
     if not shp_files:
@@ -54,13 +57,13 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     shapefile_path = shp_files[0]
 
     if shapefile_path in SHAPE_CACHE:
-        shape = SHAPE_CACHE[shapefile_path]
+    shape = SHAPE_CACHE[shapefile_path]
     else:
         try:
             shape = gpd.read_file(shapefile_path)
         except Exception as e:
             print("🔥 Shapefile load failed:", e)
-    return {"error": "Shapefile loading failed"}
+            return {"error": "Shapefile loading failed"}
 
         if shape.crs is None:
             shape = shape.set_crs(epsg=4326)

@@ -1,117 +1,537 @@
 <!DOCTYPE html>
-<html>
+
 <head>
-    <title>Hazard Tool</title>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <title>Hazard Map Generator</title>
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            background: #f2f2f2;
+        }
+
+        /* Header */
+        .header {
+            background: #3a3a3a;
+            color: #fff;
+            padding: 14px 20px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        /* Section */
+        .section {
+            background: #e6e6e6;
+            margin: 15px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .section-header {
+            padding: 10px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-weight: bold;
+        }
+
+        .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .rotate {
+            transform: rotate(180deg);
+        }
+
+        .section-content {
+            padding: 15px;
+            display: none;
+            background: #fff;
+            border-top: 1px solid #ccc;
+        }
+
+        .active {
+            display: block;
+        }
+
+        /* Grid layout */
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .small-label {
+            font-size: 11px;
+            color: #777;
+            margin-bottom: 2px;
+        }
+
+        label {
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        select, input {
+            padding: 8px;
+            border: 1px solid #bbb;
+            border-radius: 3px;
+        }
+
+        /* Return buttons */
+        .return-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        .return-buttons button {
+            padding: 10px;
+            border: 1px solid #aaa;
+            background: #d9d9d9;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .return-buttons button.active-btn {
+            background: #bfbfbf;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            margin-top: 20px;
+            padding: 10px 25px;
+            background: #4a4a4a;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        /* Map */
+        .map-container {
+            text-align: center;
+            margin: 20px;
+        }
+
+        .map-container img {
+            max-width: 85%;
+            border: 1px solid #aaa;
+        }
+		
+        .banner {
+            width: 100vw;
+            height: 80px;              /* ✅ control banner height here */
+           
+            background: gray;
+			background-image: url('your-image.jpg');
+            background-size: cover;      /* or '100% 100%' if you insist stretch */
+            background-position: center;
+            background-repeat: no-repeat;
+			
+
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .banner img {
+            width: 100%;
+            height: 100%;              /* ✅ fill the container */
+            object-fit: cover;       /* ✅ shows full image (no cropping) */
+            display: olive;
+        }
+		
+		/* Plot + Info layout */
+        .plot-row {
+            display: grid;
+            grid-template-columns: 260px 1fr;   /* left info + right plot */
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        /* Info box beside plots */
+        .info-box {
+            background: linear-gradient(135deg, #f8f4e6, #f1ead2);
+            border-left: 5px solid #d6c28a;
+            padding: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2f2f2f;
+			font-size: 14px;
+        }
+
+        /* Plot container */
+        .plot-box {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 5px;
+            border-radius: 4px;
+        }
+
+    </style>
 </head>
 <body>
 
-<h2>Uniform Hazard Spectrum Tool</h2>
+<
 
-<input type="number" id="rp" placeholder="Enter Return Period">
-<button onclick="run()">Run</button>
+<!-- TOP BANNER -->
+<div style="background:#000;">
 
-<h3>Hazard Curves</h3>
-<div id="plot1"></div>
+<div class="banner">
+    <img src="{{ url_for('static', filename='banner.png') }}">
+</div>
+</div>
 
-<h3>Hazard + Return Period</h3>
-<div id="plot2"></div>
+<!-- HEADER BAR -->
+<div class="header">Seismic Hazard Tool</div>
 
-<h3>UHS</h3>
-<div id="plot3"></div>
+<!-- INFO BOX -->
+<div style="margin:15px; background:#efe5c8; padding:15px; border-left:5px solid #d6c28a; font-size:14px; line-height:1.5;">
+    <b>Notice:</b> This tool is intended for hazard visualization and research purposes only.
+    Do not directly use these values for design code applications.
+    <br><br>
+    You can generate seismic hazard maps based on selected location, and return period,  spectral period. 
+	Results may vary depending on input data and interpolation.
+</div>
+
+
+<form method="POST">
+
+    <!-- INPUT SECTION -->
+    <div class="section">
+        <div class="section-header" onclick="toggleSection('inputSection', this)">
+            <span>Input</span>
+            <span class="arrow">▲</span>
+        </div>
+
+        <div id="inputSection" class="section-content active">
+
+            <div class="grid">
+			
+                <!------------ 1st row ------------------>
+				<!-- Edition -->
+                <div class="field">
+                    <label>Edition</label>
+                    <select>
+                        <option>First</option>
+                    </select>
+                </div>
+				
+				<!-- Location -->
+                <div class="field">
+                    <label>Location</label>
+                    <select name="location" id="location" required >
+                        <option value="">Select Location</option>
+                        {% for loc in locations %}
+                            <option value="{{ loc }}">{{ loc }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+
+                <!------------ 2nd row ------------------>
+				
+	
+                <!-- Time periods -->
+                <div class="field">
+                    <label>Time Horizon</label>
+                    <div class="small-label">Return period in years</div>
+                    <input type="text" id="return_input" readonly>
+                </div>
+				
+				<!-- Spectral Period -->
+                <div class="field">
+                    <label>Spectral Period </label>
+					<div class="small-label">in Seconds</div>
+                    <select name="period" id="period" required>
+                        <option value="" disabled selected>Select Period</option>
+                    </select>
+                </div>
+
+                
+                <!-- 3rd row: For auto select of time period -->
+                <div class="field">
+                    <label>Select Return Type</label>
+                    <div class="return-buttons">
+                        <button type="button" onclick="setReturn(2475, this)">2% in 50 years<br>(2475 yrs)</button>
+                        <button type="button" onclick="setReturn(975, this)">5% in 50 years<br>(975 yrs)</button>
+                        <button type="button" onclick="setReturn(475, this)">10% in 50 years<br>(475 yrs)</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <input type="hidden" name="return_period" id="return_period">
+
+            <button class="submit-btn" type="submit">Run</button>
+
+        </div>
+    </div>
+
+</form>
+
+<!-- MAP SECTION -->
+{% if map_data %}
+<div class="section">
+    <div class="section-header" onclick="toggleSection('mapSection', this)">
+        <span>Hazard Map</span>
+        <span class="arrow">▲</span>
+    </div>
+
+    <div id="mapSection" class="section-content active">
+
+   
+
+        <div style="display:flex; justify-content:center; align-items:center; gap:80px; position:relative;">
+
+            <!-- ARROW -->
+            <div style="position:absolute; left:50%; top:50%; width:80px; height:2px; background:black; transform:translate(-50%, -50%); z-index:10;"></div>
+
+            <div style="position:absolute; left:calc(50% + 40px); top:50%; transform:translateY(-50%); width:0; height:0; border-left:12px solid black; border-top:6px solid transparent; border-bottom:6px solid transparent; z-index:10;"></div>
+
+            <!-- LEFT MAP -->
+            <div style="text-align:center;">
+                <h4>{{ map_title_bd }}</h4>
+                <img src="data:image/png;base64,{{ bd_map_data }}" style="max-width:400px; border:1px solid #aaa;">
+            </div>
+
+            <!-- RIGHT MAP -->
+            <div style="text-align:center;">
+                <h4>{{ map_title_orig }}</h4>
+                <img src="data:image/png;base64,{{ map_data }}" style="max-width:400px; border:1px solid #aaa;">
+            </div>
+
+        </div>
+
+        <div style="text-align:center;">
+            <a download="map.png" href="data:image/png;base64,{{combined_map}}">
+                <button class="submit-btn">Download Map</button>
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endif %}
+
+
+<!-- HAZARD CURVE SECTION -->
+{% if map_data %}
+<div class="section">
+
+    <!-- HEADER (clickable dropdown) -->
+    <div class="section-header" onclick="toggleSection('hazardSection', this)">
+        <span>Hazard Curve</span>
+        <span class="arrow">▲</span>
+    </div>
+
+    <!-- CONTENT (collapsible) -->
+    <div id="hazardSection" class="section-content active">
+
+        <div class="plot-row">
+
+            <!-- LEFT INFO -->
+            <div class="info-box">
+                <div class="info-title">Hazard Curve</div>
+
+                • Shows annual frequency of exceedance (λ) vs intensity<br>
+                • Log–log scale used for clarity<br>
+                • Dashed line = selected return period<br>
+                • Helps identify design-level ground motion<br><br>
+
+                <b>Input:</b><br>
+                Location: <span id="info_loc1"></span> (selected point on map)<br> 
+                Return Period: <span id="info_rp1"></span> yrs
+            </div>
+
+            <!-- RIGHT PLOT -->
+            <div class="plot-box">
+                <div id="plot_hazard"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endif %}
+
+
+<!-- UHS SECTION -->
+{% if map_data %}
+<div class="section">
+
+    <!-- HEADER (clickable) -->
+    <div class="section-header" onclick="toggleSection('uhsSection', this)">
+        <span>Uniform Hazard Spectrum (UHS)</span>
+        <span class="arrow">▲</span>
+    </div>
+
+    <!-- CONTENT (collapsible) -->
+    <div id="uhsSection" class="section-content active">
+
+        <div class="plot-row">
+
+            <div class="info-box">
+                <div class="info-title">Uniform Hazard Spectrum</div>
+
+                • Spectral acceleration across periods<br>
+                • Same exceedance probability for all points<br>
+                • Used for seismic design basis<br><br>
+
+                <b>Meaning:</b><br>
+                Each point has equal hazard level
+            </div>
+
+            <div class="plot-box">
+                <div id="plot_uhs"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endif %}
+
+<!-- CMS SECTION -->
+{% if map_data %}
+<div class="section">
+
+    <!-- HEADER (clickable) -->
+    <div class="section-header" onclick="toggleSection('cmsSection', this)">
+        <span>Conditional Mean Spectrum (CMS)</span>
+        <span class="arrow">▲</span>
+    </div>
+
+    <!-- CONTENT (collapsible) -->
+    <div id="cmsSection" class="section-content active">
+
+        <div class="plot-row">
+
+            <div class="info-box">
+                <div class="info-title">Conditional Mean Spectrum</div>
+
+                • Conditioned at selected spectral period<br>
+                • Median + dispersion (±σ)<br>
+                • More realistic than UHS<br><br>
+
+                <b>Lines:</b><br>
+                — Median<br>
+                -- ± Sigma<br>
+                UHS for comparison
+            </div>
+
+            <div class="plot-box">
+                <div id="plot_cms"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endif %}
 
 <script>
-function run() {
+function toggleSection(id, el) {
+    let section = document.getElementById(id);
+    let arrow = el.querySelector('.arrow');
 
-    let rp = document.getElementById("rp").value;
+    section.classList.toggle('active');
+    arrow.classList.toggle('rotate');
+}
 
-    fetch("/compute", {
+function loadPeriods() {
+    let location = document.getElementById("location").value;
+    let return_period = document.getElementById("return_period").value;
+
+    if (!location || !return_period) return;
+
+    fetch(`/get_periods/${location}/${return_period}`)
+    .then(res => res.json())
+    .then(data => {
+        let dropdown = document.getElementById("period");
+        dropdown.innerHTML = "<option value='' disabled selected>Select Period</option>";
+
+        data.periods.forEach(p => {
+            let opt = document.createElement("option");
+            opt.value = p;
+            opt.text = (parseFloat(p) === 0.01) ? "PGA" : p;
+            dropdown.appendChild(opt);
+        });
+    });
+}
+
+function setReturn(val, btn) {
+    document.getElementById('return_period').value = val;
+    document.getElementById('return_input').value = val;
+
+    document.querySelectorAll('.return-buttons button').forEach(b => b.classList.remove('active-btn'));
+    btn.classList.add('active-btn');
+
+    loadPeriods(); // ✅ This will populate spectral periods
+}
+
+function loadHazardPlots(location, return_period, spectral_period) {
+
+    console.log("Plotting with:", location, return_period, spectral_period);
+
+    fetch("/compute_hazard", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({return_period: rp})
+        body: JSON.stringify({
+            location: location,
+            return_period: return_period
+        })
     })
-    .then(r => r.json())
+    .then(res => res.json())
     .then(data => {
 
-        let lambda = data.lambda;
+        if (data.error) {
+            alert(data.error);
+            return;
+        }
 
+        let lambda = data.lambda;
         let traces = [];
 
-        // =========================
-        // Hazard Curves (Plot 1)
-        // =========================
         let keys = Object.keys(data.hazard_curves);
-
-        // sort numerically
         keys.sort((a, b) => parseFloat(a) - parseFloat(b));
 
         for (let key of keys) {
+
+            let label = (parseFloat(key) === 0.01) ? "PGA" : key + " s";
+
             let c = data.hazard_curves[key];
 
             traces.push({
                 x: c.intensity,
                 y: c.lambda,
-                mode: "lines+markers",
-                name: "T = " + key + " s"
+                mode: "lines",
+                name: "T = " + label
             });
         }
-
-        Plotly.newPlot("plot1", traces, {
-            title: {
-                text: "Hazard Curves (Annual Frequency)",
-                font: {size: 16}
-            },
-            xaxis: {
-                title: "Spectral Acceleration (g)",
-                type: "log",
-                range: [-2, 2],  // example upper bound
-				
-				dtick: 1,                 // ✅ ONLY 10^n ticks
-				tickformat: ".0e",        // cleaner scientific format
-				
-                showgrid: true,
-                gridcolor: "grey",
-                gridwidth: 0.2,
-                griddash: "dashdot",
-                showline: true,
-                linecolor: "black",
-                linewidth: 1,
-                mirror: true,
-				
-              
-            },
-            yaxis: {
-                title: "Annual Frequency of Exceedance (λ)",
-                type: "log",
-                range: [-18, Math.log10(5)],  // example upper bound
-                showgrid: true,
-                gridcolor: "grey",
-                gridwidth: 0.2,
-                griddash: "dashdot",
-                showline: true,
-                linecolor: "black",
-                linewidth: 1,
-                mirror: true,
-                
-            },
-            legend: {
-                x: 0.98,          // right side
-                y: 0.98,          // top inside
-                xanchor: "right",
-                yanchor: "top",
-
-                bgcolor: "rgba(255,255,255,0.7)",
-                bordercolor: "black",
-                borderwidth: 1,
-
-                font: {size: 8}
-            },
-            margin: {t: 50, l: 60, r: 20, b: 60}
-        });
-
-        // =========================
-        // Hazard + Return Period (Plot 2)
-        // =========================
+        // Update info boxes
+        document.getElementById("info_loc1").innerText = location;
+        document.getElementById("info_rp1").innerText = return_period;
+		
+		
+        // =====================
+        // Hazard + Return Period
+        // =====================
         let traces2 = [...traces];
 
         traces2.push({
@@ -119,21 +539,42 @@ function run() {
             y: [lambda, lambda],
             mode: "lines",
             name: "Return Period Line",
-            line: {dash: "dash"}
+            line: {dash: "dash",color: "black"}
         });
 
-        Plotly.newPlot("plot2", traces2, {
+        Plotly.newPlot("plot_hazard", traces2, {
             title: {
                 text: "Hazard Curves with Return Period",
                 font: {size: 16}
             },
+
             xaxis: {
                 title: "Spectral Acceleration (g)",
                 type: "log",
-                range: [-2, 2],  // example upper bound
+                range: [-2, 2],
+
+                tickvals: [
+                    Math.pow(10, -2),
+                    Math.pow(10, -1),
+                    Math.pow(10, 0),
+                    Math.pow(10, 1),
+                    Math.pow(10, 2)
+                ],
+                ticktext: [
+                    "10⁻²",
+                    "10⁻¹",
+                    "1",
+                    "10¹",
+                    "10²"
+                ],
+                
+				tickfont: {
+                    size: 10   // ✅ same as y-axis
+                },
+                ticks: "outside",
+                ticklen: 2,
+                tickwidth: 0.5,
 				
-				dtick: 1,                 // ✅ ONLY 10^n ticks
-				tickformat: ".0e",        // cleaner scientific format
 				
                 showgrid: true,
                 gridcolor: "grey",
@@ -142,14 +583,22 @@ function run() {
                 showline: true,
                 linecolor: "black",
                 linewidth: 1,
-                mirror: true,
-
-              
+                mirror: true
             },
+
             yaxis: {
                 title: "Annual Frequency of Exceedance (λ)",
                 type: "log",
-                range: [-18, Math.log10(5)],  // example upper bound
+                range: [-18, Math.log10(5)],
+				
+				tickfont: {
+                    size: 10   // ✅ same as y-axis
+                },
+                ticks: "outside",
+                ticklen: 2,
+                tickwidth: 0.5,
+
+
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -158,38 +607,90 @@ function run() {
                 linecolor: "black",
                 linewidth: 1,
                 mirror: true,
-                tickformat: "e"
+
+                exponentformat: "power",
+                showexponent: "all"
             },
+
             legend: {
-                x: 0.98,          // right side
-                y: 0.98,          // top inside
+                x: 0.98,
+                y: 0.98,
                 xanchor: "right",
                 yanchor: "top",
-
                 bgcolor: "rgba(255,255,255,0.7)",
                 bordercolor: "black",
-                borderwidth: 1,
-
+                borderwidth: 0,
                 font: {size: 8}
             },
-            margin: {t: 50, l: 60, r: 20, b: 60}
-        });
 
-        // =========================
-        // UHS Plot (Plot 3)
-        // =========================
-        Plotly.newPlot("plot3", [{
+            margin: {t: 50, l: 60, r: 20, b: 60}
+        },  {
+            displaylogo: false,   // ✅ removes "Produced with Plotly"
+
+            modeBarButtonsToRemove: [
+                    
+                "pan2d",
+                "select2d",
+                "lasso2d",
+                 
+                "resetScale2d",
+
+                "hoverClosestCartesian",   // Show closest data
+                "hoverCompareCartesian",   // Compare data
+
+                "toggleSpikelines"         // Spike lines
+            ],
+			modeBarButtonsToAdd: [{
+			    name: "Download Data",
+                icon: Plotly.Icons.disk,
+                click: function(gd) {
+                    let data = gd.data;
+					let csv = "Trace,X,Y\n";
+					data.forEach(trace => {
+                        for (let i = 0; i < trace.x.length; i++) {
+                            csv += `${trace.name},${trace.x[i]},${trace.y[i]}\n`;
+                        }
+                    });
+					
+					let blob = new Blob([csv], { type: "text/csv" });
+                    let url = URL.createObjectURL(blob);
+
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = "plot_data.csv";
+                    a.click();
+				}
+			}]		
+        });
+		
+		
+
+        // =====================
+        // UHS Plot
+        // =====================
+        Plotly.newPlot("plot_uhs", [{
             x: data.uhs_periods,
             y: data.uhs_values,
             mode: "lines+markers",
             name: "Uniform Hazard Curve"
         }], {
             title: {
-                text: "Uniform Hazard Spectrum (" + rp + " yrs)",
+                text: "Uniform Hazard Spectrum (" + return_period + " yrs)",
                 font: {size: 16}
             },
+
             xaxis: {
                 title: "Period (s)",
+                range:[0,3], 
+				
+				tickfont: {
+                    size: 10   // ✅ same as y-axis
+                },
+                ticks: "outside",
+                ticklen: 2,
+                tickwidth: 0.5,
+
+
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -199,8 +700,19 @@ function run() {
                 linewidth: 1,
                 mirror: true
             },
+
             yaxis: {
                 title: "Spectral Acceleration (g)",
+				
+				
+				tickfont: {
+                    size: 10   // ✅ same as y-axis
+                },
+                ticks: "outside",
+                ticklen: 2,
+                tickwidth: 0.5,
+
+
                 showgrid: true,
                 gridcolor: "grey",
                 gridwidth: 0.2,
@@ -210,16 +722,252 @@ function run() {
                 linewidth: 1,
                 mirror: true
             },
+
             legend: {
                 font: {size: 10},
                 bgcolor: "rgba(255,255,255,0.7)"
             },
+
             margin: {t: 50, l: 60, r: 20, b: 60}
+        },  {
+            displaylogo: false,   // ✅ removes "Produced with Plotly"
+
+            modeBarButtonsToRemove: [
+                    
+                "pan2d",
+                "select2d",
+                "lasso2d",
+                 
+                "resetScale2d",
+
+                "hoverClosestCartesian",   // Show closest data
+                "hoverCompareCartesian",   // Compare data
+
+                "toggleSpikelines"         // Spike lines
+            ],
+			modeBarButtonsToAdd: [{
+			    name: "Download Data",
+                icon: Plotly.Icons.disk,
+                click: function(gd) {
+                    let data = gd.data;
+					let csv = "Trace,X,Y\n";
+					data.forEach(trace => {
+                        for (let i = 0; i < trace.x.length; i++) {
+                            csv += `${trace.name},${trace.x[i]},${trace.y[i]}\n`;
+                        }
+                    });
+					
+					let blob = new Blob([csv], { type: "text/csv" });
+                    let url = URL.createObjectURL(blob);
+
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = "plot_data.csv";
+                    a.click();
+				}
+			}]
+        });
+		
+		
+		// =====================
+        // CMS Plot
+        // =====================
+        fetch("/compute_cms", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({
+                location: location,
+                return_period: return_period,
+                spectral_period: spectral_period
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.error) {
+                console.log(data.error);
+                return;
+            }
+
+            let traces = [];
+
+            traces.push({
+                x: data.period,
+                y: data.cms_median,
+                mode: "lines",
+                name: "CMS Median"
+            });
+
+            traces.push({
+                x: data.period,
+                y: data.cms_plus,
+                mode: "lines",
+                line: {dash: "dash"},
+                name: "CMS + σ"
+            });
+
+            traces.push({
+                x: data.period,
+                y: data.cms_minus,
+                mode: "lines",
+                line: {dash: "dash"},
+                name: "CMS - σ"
+            });
+
+            traces.push({
+                x: data.period,
+                y: data.uhs,
+                mode: "lines",
+                name: "UHS"
+            });
+
+            Plotly.newPlot("plot_cms", traces, {
+                title: "Conditional Mean Spectrum (CMS)",
+
+                xaxis: {
+                    title: "Period (s)",
+                    autorange: true, 
+					tickfont: {
+                    size: 10   // ✅ same as y-axis
+                    },
+                    ticks: "outside",
+					showticklabels: true,
+					tickmode: "auto",
+                    ticklen: 2,
+                    tickwidth: 0.5,
+
+
+                    showgrid: true,
+                    gridcolor: "grey",
+                    gridwidth: 0.2,
+                    griddash: "dashdot",
+                    showline: true,
+                    linecolor: "black",
+                    linewidth: 1,
+                    mirror: true
+                },
+
+                yaxis: {
+                    title: "Spectral Acceleration (g)",
+					rangemode: "tozero",   // ✅ ensures axis starts at 0
+					autorange: true,              // 🔴 important
+                    
+					zeroline: false,
+					tickfont: {
+                    size: 10   // ✅ same as y-axis
+                    },
+                    ticks: "outside",
+                    ticklen: 2,
+                    tickwidth: 0.5,
+
+
+                    showgrid: true,
+                    gridcolor: "grey",
+                    gridwidth: 0.2,
+                    griddash: "dashdot",
+                    showline: true,
+                    linecolor: "black",
+                    linewidth: 1,
+                    mirror: true
+					
+                },
+				
+				legend: {
+                    x: 0.98,
+                    y: 0.98,
+                    xanchor: "right",
+                    yanchor: "top",
+                    bgcolor: "rgba(255,255,255,0.7)",
+                    bordercolor: "black",
+                    borderwidth: 0,
+                    font: {size: 8}
+                },
+				
+
+                margin: {t: 50, l: 60, r: 20, b: 60}
+            },  {
+                displaylogo: false,   // ✅ removes "Produced with Plotly"
+
+                modeBarButtonsToRemove: [
+                    
+                    "pan2d",
+                    "select2d",
+                    "lasso2d",
+                 
+                    "resetScale2d",
+
+                    "hoverClosestCartesian",   // Show closest data
+                    "hoverCompareCartesian",   // Compare data
+
+                    "toggleSpikelines"         // Spike lines
+                ],
+				modeBarButtonsToAdd: [{
+			    name: "Download Data",
+                icon: Plotly.Icons.disk,
+                click: function(gd) {
+                    let data = gd.data;
+					let csv = "Trace,X,Y\n";
+					data.forEach(trace => {
+                        for (let i = 0; i < trace.x.length; i++) {
+                            csv += `${trace.name},${trace.x[i]},${trace.y[i]}\n`;
+                        }
+                    });
+					
+					let blob = new Blob([csv], { type: "text/csv" });
+                    let url = URL.createObjectURL(blob);
+
+                    let a = document.createElement("a");
+                    a.href = url;
+                    a.download = "plot_data.csv";
+                    a.click();
+				}
+			}]
+			
+            });
+
         });
 
     });
 }
+
+document.querySelector("form").addEventListener("submit", function() {
+
+    let location = document.getElementById("location").value;
+    let return_period = document.getElementById("return_period").value;
+
+    let periodSelect = document.getElementById("period");
+    let period = periodSelect.options[periodSelect.selectedIndex]?.value;
+
+    console.log("Saving:", location, return_period, period);
+
+    localStorage.setItem("plot_location", location);
+    localStorage.setItem("plot_rp", return_period);
+    localStorage.setItem("plot_period", period);
+});
+
 </script>
 
+<script>
+window.onload = function() {
+
+    let location = localStorage.getItem("plot_location");
+    let return_period = localStorage.getItem("plot_rp");
+    let period = localStorage.getItem("plot_period");
+
+    console.log("Loaded from storage:", location, return_period, period);
+
+    if (!location || !return_period || !period) {
+        console.warn("Missing inputs → plots not triggered");
+        return;
+    }
+
+    loadHazardPlots(location, return_period, period);
+
+    localStorage.clear();
+};
+</script>
+
+
+
 </body>
-</html>
+

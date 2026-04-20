@@ -274,105 +274,13 @@ def get_periods(location, return_period):
 # -----------------------------------
 
 # Routes
-# -----------------------------------
-@app.route("/", methods=["GET", "POST"])
+@app.route("/")
 def index():
-    locations = get_locations()
+    return "App is working"
 
-    selected_location = None
-    selected_period = None
-    map_data = None
-    bd_map_data = None
-    combined_map = None
-    map_title = None
-    map_title_bd = None
-    map_title_orig = None
 
-    periods = []
 
-    if request.method == "POST":
 
-        selected_location = request.form.get("location")
-        selected_period = request.form.get("period")
-        selected_return_str = request.form.get("return_period")
-
-        try:
-            selected_period = float(selected_period)
-        except:
-            selected_period = None
-
-        try:
-            return_period = int(selected_return_str)
-        except:
-            return_period = None
-
-        if selected_location and selected_period is not None and return_period is not None:
-
-            import glob
-            import geopandas as gpd
-
-            base_path = os.path.join(app.root_path, "Hazard curve", selected_location, str(return_period))
-            shp_files = glob.glob(os.path.join(base_path, "*.shp"))
-
-            highlight_shape = None
-            if shp_files:
-                highlight_shape = gpd.read_file(shp_files[0])
-
-            # ✅ Titles FIRST
-            percent_dict = {"475": "10%", "975": "5%", "2475": "2%"}
-            percent_text = percent_dict.get(str(return_period), "22%")
-
-            if selected_period == 0.01:
-                period_label = "PGA"
-            else:
-                period_label = f"{selected_period:.2f} s"
-
-            map_title_bd = f"Seismic Hazard Map for Bangladesh at {period_label} ({percent_text} in 50 years)"
-            map_title_orig = f"Seismic Hazard Map for {selected_location} at {period_label} ({percent_text} in 50 years)"
-
-            hazard_data = compute_hazard(return_period, selected_location)
-
-            site_lon = hazard_data.get("site_lon")
-            site_lat = hazard_data.get("site_lat")
-            # ✅ Generate maps
-            map_data = generate_hazard_map(
-                selected_location,
-                selected_period,
-                return_period,
-                point=(site_lon, site_lat)
-            )
-
-            bd_map_data = generate_hazard_map(
-                selected_location,
-                selected_period,
-                return_period,
-                subfolder="BD",
-                highlight_shape=highlight_shape
-            )
-
-            # ✅ Combine maps
-            from hazard_map import generate_combined_map
-            combined_map = generate_combined_map(
-                bd_map_data,
-                map_data,
-                map_title_bd,
-                map_title_orig
-            )
-
-    # ✅ ✅ THIS MUST ALWAYS RUN (GET + POST)
-    return render_template(
-        "index.html",
-        locations=locations,
-        periods=periods,
-        selected_location=selected_location,
-        selected_period=selected_period,
-        map_data=map_data,
-        bd_map_data=bd_map_data,
-        combined_map=combined_map,
-        map_title=map_title,
-        map_title_bd=map_title_bd,
-        map_title_orig=map_title_orig
-    )
 
 ###### Routes for urve ################
 

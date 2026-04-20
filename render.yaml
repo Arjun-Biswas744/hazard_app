@@ -1,14 +1,12 @@
 services:
-- type: web
-  name: Hazard_tool
-  env: python
-  region: singapore
-  plan: free
+  - type: web
+    name: Hazard_tool
+    env: python
+    region: singapore
+    plan: free
 
-  pythonVersion: 3.11.9
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
 
-  buildCommand: |
-    pip install --upgrade pip
-    pip install -r requirements.txt
-
-  startCommand: gunicorn app:app
+    startCommand: gunicorn app:app

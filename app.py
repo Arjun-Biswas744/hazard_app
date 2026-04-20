@@ -39,6 +39,9 @@ def compute_hazard(return_period, location):
     base_path = os.path.join(app.root_path, "Hazard curve")
     folder_path = os.path.join(base_path, location, str(return_period))
     print("📂 Using folder:", folder_path)
+    print("BASE PATH:", base_path)
+    print("FOLDER EXISTS:", os.path.exists(folder_path))
+    print("FILES:", os.listdir(folder_path) if os.path.exists(folder_path) else "NO FOLDER")
 
     if os.path.exists(folder_path):
         print("📄 Files inside:", os.listdir(folder_path))
@@ -190,6 +193,8 @@ def compute_cms(return_period, location, spectral_period):
     )
 
     print("📄 CMS file:", cms_file)
+    print("CMS PATH:", cms_file)
+    print("EXISTS:", os.path.exists(cms_file))
 
     if not os.path.exists(cms_file):
         return {"error": "CMS file not found"}
@@ -312,7 +317,10 @@ def index():
             import geopandas as gpd
 
             base_path = os.path.join(app.root_path, "Hazard curve", selected_location, str(return_period))
-            shp_files = glob.glob(os.path.join(base_path, "*.shp"))
+            shp_files = glob.glob(os.path.join(location_folder, "*.shp"))
+
+            if not shp_files:
+                return {"error": f"No shapefile found in {location_folder}"}
 
             highlight_shape = None
             if shp_files:

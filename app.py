@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 import os
 import re
 import numpy as np
-# import pandas as pd
+import pandas as pd
 import time
 
 # 🔴 IMPORT YOUR FUNCTION FILE NAME HERE
@@ -308,7 +308,15 @@ def index():
 
         if selected_location and selected_period is not None and return_period is not None:
 
+            import glob
+            import geopandas as gpd
+
+            base_path = os.path.join(app.root_path, "Hazard curve", selected_location, str(return_period))
+            shp_files = glob.glob(os.path.join(base_path, "*.shp"))
+
             highlight_shape = None
+            if shp_files:
+                highlight_shape = gpd.read_file(shp_files[0])
 
             # ✅ Titles FIRST
             percent_dict = {"475": "10%", "975": "5%", "2475": "2%"}

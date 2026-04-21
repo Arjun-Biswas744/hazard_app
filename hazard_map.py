@@ -1,5 +1,5 @@
 import os
-import geopandas as gpd
+# import geopandas as gpd
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -56,7 +56,7 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     if shapefile_path in SHAPE_CACHE:
         shape = SHAPE_CACHE[shapefile_path]
     else:
-        shape = gpd.read_file(shapefile_path)
+        shape = None
 
         if shape.crs is None:
             shape = shape.set_crs(epsg=4326)

@@ -10,5 +10,3 @@ shapely==2.0.4
 fiona==1.9.6
 pyproj==3.6.1
 rtree==1.2.0
-
-

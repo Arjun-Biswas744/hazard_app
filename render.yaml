@@ -1,0 +1,15 @@
+version: "1"
+services:
+- type: web
+  name: Hazard_Tool
+  runtime: python
+  repo: https://github.com/Arjun-Biswas744/hazard_app
+  plan: free
+  region: singapore
+  buildCommand: pip install -r requirements.txt
+  startCommand: gunicorn app:app
+  autoDeployTrigger: commit
+
+  envVars:
+    - key: PYTHON_VERSION
+      value: 3.11.9

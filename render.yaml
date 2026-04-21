@@ -1,14 +1,11 @@
 services:
-- type: web
-  name: Hazard_tool
-  env: python
-  region: singapore
-  plan: free
-
-  buildCommand: |
-    apt-get update && apt-get install -y \
-    gdal-bin libgdal-dev libgeos-dev libproj-dev
-    pip install --upgrade pip
-    pip install -r requirements.txt
-
-  startCommand: gunicorn app:app
+  - type: web
+    name: hazard-app
+    env: python
+    buildCommand: |
+      pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+    plan: free

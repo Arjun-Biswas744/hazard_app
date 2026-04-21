@@ -5,8 +5,3 @@ pandas==2.1.4
 matplotlib==3.8.4
 scipy==1.11.4
 pillow==10.3.0
-geopandas==0.14.4
-shapely==2.0.4
-fiona==1.9.6
-pyproj==3.6.1
-rtree==1.2.0

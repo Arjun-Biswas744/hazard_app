@@ -30,13 +30,13 @@ def combine_maps(img1_base64, img2_base64):
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(__file__)
-HAZARD_FOLDER = os.path.join(BASE_DIR, "Hazard curve")
+HAZARD_FOLDER = os.path.join(BASE_DIR, "Hazard_curve")
 
 
 
 ########for urve############
 def compute_hazard(return_period, location):
-    base_path = os.path.join(app.root_path, "Hazard curve")
+    base_path = os.path.join(app.root_path, "Hazard_curve")
     folder_path = os.path.join(base_path, location, str(return_period))
     print("📂 Using folder:", folder_path)
 
@@ -180,7 +180,7 @@ def compute_hazard(return_period, location):
 
 def compute_cms(return_period, location, spectral_period):
 
-    base_path = os.path.join(app.root_path, "Hazard curve")
+    base_path = os.path.join(app.root_path, "Hazard_curve")
     cms_file = os.path.join(
         base_path,
         location,
@@ -311,7 +311,7 @@ def index():
             import glob
             import geopandas as gpd
 
-            base_path = os.path.join(app.root_path, "Hazard curve", selected_location, str(return_period))
+            base_path = os.path.join(app.root_path, "Hazard_curve", selected_location, str(return_period))
             shp_files = glob.glob(os.path.join(base_path, "*.shp"))
 
             highlight_shape = None

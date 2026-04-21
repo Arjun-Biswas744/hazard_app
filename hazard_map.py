@@ -2,8 +2,9 @@ import os
 import geopandas as gpd
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib
 matplotlib.use("Agg")
+import matplotlib.pyplot as plt
 from scipy.interpolate import griddata
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import glob

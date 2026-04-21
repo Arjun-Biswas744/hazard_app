@@ -58,7 +58,7 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     else:
         shape = None
 
-        if shape.crs is None:
+        dhaka_poly = None
             shape = shape.set_crs(epsg=4326)
         else:
             shape = shape.to_crs(epsg=4326)
@@ -128,6 +128,7 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     # ---------------------------
     # Mask (FAST)
     # ---------------------------
+    
     mask = contains(dhaka_poly, grid_x, grid_y)
     grid_z[~mask] = np.nan
 

@@ -38,8 +38,9 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     if cache_key in MAP_CACHE:
         return MAP_CACHE[cache_key]
 
-    base_dir = os.path.dirname(__file__)
-    main_folder = os.path.join(base_dir, "Hazard_curve")
+    from flask import current_app
+
+    main_folder = os.path.join(current_app.root_path, "Hazard_curve")
     location_folder = os.path.join(main_folder, LOCATION, str(return_period))
 
     if subfolder:

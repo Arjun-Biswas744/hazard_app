@@ -3,6 +3,7 @@ import geopandas as gpd
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+matplotlib.use("Agg")
 from scipy.interpolate import griddata
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import glob
@@ -27,7 +28,7 @@ def generate_hazard_map(LOCATION, TARGET_PERIOD, return_period="475", subfolder=
     COLORMAP = "jet"
 
     INTERP_METHOD = "linear"   # ✅ SAME as your original
-    GRID_RESOLUTION = 500      # ✅ SAME
+    GRID_RESOLUTION = 300      # ✅ SAME
     FIG_SIZE = (1, 1)          # ✅ SAME
     # ===============================================
 
